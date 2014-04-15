@@ -1,6 +1,7 @@
 package se.kth.ict.hotspots;
 
 import android.app.ListActivity;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
 import android.widget.ArrayAdapter;
@@ -19,9 +20,14 @@ public class MainActivity extends ListActivity {
 
         String city = null;
         try {
-            DatabaseHelper helper = new DatabaseHelper(this);
-            city = new CityAdapter(helper).getNearestCity(59.403, 17.941);
-            new LocationAdapter(helper).insertLocation("demo", 0, 0, 59.321, 18.073);
+            DatabaseHelper helper = DatabaseHelper.getInstance(this);
+
+            city = new CityAdapter(helper).getNearestCity(59.403, 17.941, 10000);
+
+            Location demoLocation = new Location("demo");
+            demoLocation.setLatitude(59.321);
+            demoLocation.setLongitude(18.073);
+            new LocationAdapter(helper).insertLocation(demoLocation);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (jsqlite.Exception e) {

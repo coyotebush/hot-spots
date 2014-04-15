@@ -1,5 +1,6 @@
 package se.kth.ict.hotspots.db;
 
+import android.location.Location;
 import jsqlite.Database;
 import jsqlite.Stmt;
 
@@ -13,15 +14,22 @@ public class LocationAdapter {
         db = helper.getDatabase();
     }
 
-    public long insertLocation(String provider, double accuracy, long time, double latitude, double longitude)
+    /**
+     * Insert a location record into the database.
+     *
+     * @param location Location object whose data will be inserted
+     * @return ID of inserted row
+     * @throws jsqlite.Exception
+     */
+    public long insertLocation(Location location)
             throws jsqlite.Exception {
-        Stmt stmt = db.prepare("INSERT INTO location (provider, accuracy, time, geom) " +
+        Stmt stmt = db.prepare("INSERT INTO location (provider, time, accuracy, geom) " +
                 "VALUES (?, ?, ?, MakePoint(?, ?, 4326))");
-        stmt.bind(1, provider);
-        stmt.bind(2, accuracy);
-        stmt.bind(3, time);
-        stmt.bind(4, longitude);
-        stmt.bind(5, latitude);
+        stmt.bind(1, location.getProvider());
+        stmt.bind(2, location.getTime()); // TODO store getElapsedRealtimeNanos instead/also?
+        stmt.bind(3, location.getAccuracy());
+        stmt.bind(4, location.getLongitude());
+        stmt.bind(5, location.getLatitude());
         stmt.step();
         return db.last_insert_rowid();
     }
