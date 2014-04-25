@@ -1,5 +1,10 @@
 package se.kth.ict.hotspots;
 
+import java.io.IOException;
+
+import se.kth.ict.hotspots.db.CityAdapter;
+import se.kth.ict.hotspots.db.DatabaseHelper;
+import se.kth.ict.hotspots.db.LocationAdapter;
 import android.app.AlarmManager;
 import android.app.ListActivity;
 import android.app.PendingIntent;
@@ -8,24 +13,23 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
-import se.kth.ict.hotspots.db.CityAdapter;
-import se.kth.ict.hotspots.db.DatabaseHelper;
-import se.kth.ict.hotspots.db.LocationAdapter;
-
-import java.io.IOException;
+import android.widget.Toast;
 
 import com.commonsware.cwac.locpoll.LocationPoller;
 import com.commonsware.cwac.locpoll.LocationPollerParameter;
 
 public class MainActivity extends ListActivity {
 
-	private AlarmManager mgr;
-	private PendingIntent pi;
-	
-    @Override
+	private static final int PERIOD=15*60*1000; // 15 minutes
+	private PendingIntent pi=null;
+	private AlarmManager mgr=null;	
+    
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -49,25 +53,30 @@ public class MainActivity extends ListActivity {
                 new String[] { "Home", city != null ? city : "Work" });
         setListAdapter(adapter);
         
-        mgr=(AlarmManager)getSystemService(ALARM_SERVICE);
+    	mgr=(AlarmManager)getSystemService(ALARM_SERVICE);
+    	Intent i=new Intent(this, LocationPoller.class);
 
-        Intent i=new Intent(this, LocationPoller.class);
-
-        Bundle bundle = new Bundle();
-        LocationPollerParameter parameter = new LocationPollerParameter(bundle);
-        parameter.setIntentToBroadcastOnCompletion(new Intent(this, LocationReceiver.class));
-        // try GPS and fall back to NETWORK_PROVIDER
-        parameter.setProviders(new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER});
-        parameter.setTimeout(60000);
-        i.putExtras(bundle);
+    	Bundle bundle = new Bundle();
+    	LocationPollerParameter parameter = new LocationPollerParameter(bundle);
+    	parameter.setIntentToBroadcastOnCompletion(new Intent(this, LocationReceiver.class));
+    	// try GPS and fall back to NETWORK_PROVIDER
+    	parameter.setProviders(new String[] {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER});
+    	parameter.setTimeout(30000);
+    	i.putExtras(bundle);
 
 
-        pi=PendingIntent.getBroadcast(this, 0, i, 0);
-        mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                                            SystemClock.elapsedRealtime(),
-                                            10000,
-                                            pi);
-    }
+    	pi=PendingIntent.getBroadcast(this, 0, i, 0);
+    	mgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+    			SystemClock.elapsedRealtime(),
+    			PERIOD,
+    			pi);
+
+    	Toast
+    	.makeText(this,
+    	"Location polling every 15 minutes begun",
+    	Toast.LENGTH_LONG)
+    	.show();
+    	  }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

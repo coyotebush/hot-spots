@@ -1,48 +1,64 @@
 package se.kth.ict.hotspots;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Date;
 
-import com.commonsware.cwac.locpoll.LocationPollerResult;
+import jsqlite.Exception;
 
+import se.kth.ict.hotspots.db.DatabaseHelper;
+import se.kth.ict.hotspots.db.LocationAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
+import com.commonsware.cwac.locpoll.LocationPollerResult;
 
-public class LocationReceiver extends BroadcastReceiver{
+public class LocationReceiver extends BroadcastReceiver {
+  @Override
+  public void onReceive(Context context, Intent intent) {
+   
+      
+      Bundle b=intent.getExtras();
+      
+      LocationPollerResult locationResult = new LocationPollerResult(b);
+      
+      Location loc=locationResult.getLocation();
+      String msg;
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		// TODO Auto-generated method stub
-		Bundle b=intent.getExtras();
+      if (loc==null) {
+        loc=locationResult.getLastKnownLocation();
+        if (loc==null) {
+          msg=locationResult.getError();
+        }
+        else {
+          msg="TIMEOUT, lastKnown="+loc.toString();
 
-		  LocationPollerResult locationResult = new LocationPollerResult(b);
+        }
+      }
+      else {
+        msg=loc.toString();
+      }
+      
+      if (msg==null) {
+        msg="Invalid broadcast received!";
+      }
+      DatabaseHelper helper;
+	try {
+	      System.out.println(loc.getAltitude());
 
-		  Location loc=locationResult.getLocation();
-		  String msg;
-
-		  if (loc==null) {
-		    loc=locationResult.getLastKnownLocation();
-		    System.out.println(loc);
-
-		    if (loc==null) {
-		      msg=locationResult.getError();
-		      System.out.println(msg);
-		    }
-		    else {
-		      msg="TIMEOUT, lastKnown="+loc.toString();
-		      System.out.println(msg);
-		    }
-		  }
-		  else {
-		    msg=loc.toString();
-		    System.out.println(msg);
-		  }
-
-		  if (msg==null) {
-		    msg="Invalid broadcast received!";
-		  }
+		helper = DatabaseHelper.getInstance(context);
+		new LocationAdapter(helper).insertLocation(loc);
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 	}
-
-	
-	
+  }
 }
