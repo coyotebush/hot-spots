@@ -1,22 +1,16 @@
 package se.kth.ict.hotspots;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Date;
 
-import jsqlite.Exception;
-
-import se.kth.ict.hotspots.db.DatabaseHelper;
-import se.kth.ict.hotspots.db.LocationAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import com.commonsware.cwac.locpoll.LocationPollerResult;
+import se.kth.ict.hotspots.db.DatabaseHelper;
+import se.kth.ict.hotspots.db.LocationAdapter;
+
+import java.io.IOException;
 
 public class LocationReceiver extends BroadcastReceiver {
   @Override
@@ -49,14 +43,13 @@ public class LocationReceiver extends BroadcastReceiver {
       }
       DatabaseHelper helper;
 	try {
-	      System.out.println(loc.getAltitude());
-
+        Log.i("LocationReceiver", msg);
 		helper = DatabaseHelper.getInstance(context);
 		new LocationAdapter(helper).insertLocation(loc);
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
-	} catch (Exception e) {
+	} catch (jsqlite.Exception e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
