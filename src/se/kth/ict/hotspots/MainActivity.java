@@ -1,6 +1,7 @@
 package se.kth.ict.hotspots;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,6 +18,7 @@ public class MainActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sendBroadcast(new Intent(this, AlarmSetter.class));
 
         String city = null;
         try {
