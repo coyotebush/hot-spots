@@ -8,7 +8,7 @@ filename = sys.argv[1]
 conn = sqlite3.connect(filename)
 cur = conn.cursor()
 
-cur.execute("SELECT AsGeoJSON(geom) FROM favorite WHERE MbrMinY(geom) > 59.33 ORDER BY weight / GreatCircleLength(ExteriorRing(geom)) DESC LIMIT 400")
+cur.execute("SELECT AsGeoJSON(geom) FROM favorite ORDER BY weight / GreatCircleLength(ExteriorRing(geom)) DESC LIMIT 10")
 print '{"type": "FeatureCollection", "features": ['
 first = True
 for r in cur:
