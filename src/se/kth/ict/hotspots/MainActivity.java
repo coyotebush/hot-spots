@@ -2,9 +2,12 @@ package se.kth.ict.hotspots;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import se.kth.ict.hotspots.db.DatabaseHelper;
@@ -16,7 +19,8 @@ import java.io.IOException;
 import java.util.List;
 
 public class MainActivity extends ListActivity {
-
+    
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +43,19 @@ public class MainActivity extends ListActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	switch (item.getItemId()) {
+    	case R.id.action_settings:
+    		Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+    		startActivity(intent);
+    		return true;
+    	default:
+            return super.onOptionsItemSelected(item);	
+    	}
+    	
     }
 
     private class LoadFavoritesTask extends AsyncTask<Void, Void, List<Favorite>> {
