@@ -32,7 +32,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-                builder.setTitle("Confirm");
+                builder.setTitle("Destroy location data");
                 builder.setMessage("Are you sure?");
 
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -66,7 +66,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-                builder.setTitle("Confirm");
+                builder.setTitle("Destroy favorites data");
                 builder.setMessage("Are you sure?");
 
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
