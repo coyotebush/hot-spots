@@ -28,15 +28,11 @@
             
             <Preference android:title="Clear location data"
                 android:key="clear_location" >
-	   			<intent android:action="android.intent.action.VIEW"
-	            android:data="https://github.com/coyotebush/hot-spots" />
 			</Preference>
 			
 			<Preference android:title="Clear favorites data"
 			    android:key="clear_favorites" >
-	   			<intent android:action="android.intent.action.VIEW"
-	            android:data="https://github.com/coyotebush/hot-spots" />
-			</Preference>
+	   		</Preference>
 		    
 		    <Preference android:title="Source code on Github"
 		        android:summary="Opens external web browser" >

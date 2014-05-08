@@ -1,14 +1,17 @@
 package se.kth.ict.hotspots;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
-public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener{
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -19,8 +22,76 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         String frequency = myPref.getString("tracking_frequent", "");
         Preference trackingF = findPreference("tracking_frequent");
         trackingF.setSummary("Tracking frequency set to "+frequency+" milliseconds");
+        Preference clearLocation = findPreference("clear_location");
 
+        // Clear locations
+        clearLocation.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                builder.setTitle("Confirm");
+                builder.setMessage("Are you sure?");
+
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Clear locations method
+                        Toast.makeText(getActivity(), "bye bye locations", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                });
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+                return false;
+            }
+        });
+        Preference clearFavorites = findPreference("clear_favorites");
+        
+        // Clear favorites
+        clearFavorites.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                builder.setTitle("Confirm");
+                builder.setMessage("Are you sure?");
+
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Clear favorites method
+                        Toast.makeText(getActivity(), "bye bye favorites", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                });
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+                return false;
+            }
+        });
 	}
+	
 	
 	@Override
     public void onResume() {
@@ -30,14 +101,14 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     }
 
 
-    @Override
+	@Override
     public void onPause() {
         super.onPause();
         // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 	
-	
+
 	@Override
 	public void onDestroy() {
 	    super.onDestroy();
@@ -45,8 +116,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 	}
 
 
-
-	 @Override
+	@Override
 	    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 	        Preference connectionPref = findPreference(key);
 	        if(key.equalsIgnoreCase("perform_updates") ) {
