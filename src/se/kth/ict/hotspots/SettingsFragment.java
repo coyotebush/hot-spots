@@ -49,29 +49,15 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 	 @Override
 	    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 	        Preference connectionPref = findPreference(key);
-	        switch (key) {
-	        case "perform_updates":
+	        if(key.equalsIgnoreCase("perform_updates") ) {
 	            SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 	            if (myPref.getBoolean("perform_updates", false)==false) {
 	                Toast.makeText(getActivity(), "Tracking disabled", Toast.LENGTH_SHORT).show();
-	                break;
 	            } else {
 	                Toast.makeText(getActivity(), "Tracking enabled", Toast.LENGTH_SHORT).show();
-	                break;
 	            }
-	            
-	        case "tracking_frequent":
+	        } else if (key.equalsIgnoreCase("tracking_frequent")) {
 	            connectionPref.setSummary("Tracking frequency set to "+sharedPreferences.getString(key, "")+" milliseconds");
-	            break;
-	        // two cases below might be pointless since the magic should be done in preferences.xml 
-	        case "clear_location":
-	            //clear location database here
-                break;
-	        case "clear_favorites":
-	            //clear favorites database here
-	            break;
 	        }
 	    }
 	}
-
-
