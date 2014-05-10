@@ -9,6 +9,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
 public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener{
@@ -21,6 +22,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String frequency = myPref.getString("tracking_frequent", "");
         Preference trackingF = findPreference("tracking_frequent");
+        
+        // This just uses milliseconds format when preferences is created for the first time
         trackingF.setSummary("Tracking frequency set to "+frequency+" milliseconds");
         Preference clearLocation = findPreference("clear_location");
 
@@ -127,7 +130,24 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 	                Toast.makeText(getActivity(), "Tracking enabled", Toast.LENGTH_SHORT).show();
 	            }
 	        } else if (key.equalsIgnoreCase("tracking_frequent")) {
-	            connectionPref.setSummary("Tracking frequency set to "+sharedPreferences.getString(key, "")+" milliseconds");
+	            String helper = sharedPreferences.getString(key, "");
+	            Log.d("TAG", helper);
+	            if (helper.equalsIgnoreCase("5000")) {
+	                connectionPref.setSummary("Tracking frequency set to 5 seconds");
+	                
+	            } else if (helper.equalsIgnoreCase("30000")) {
+	                   connectionPref.setSummary("Tracking frequency set to 30 seconds");
+
+	            } else if (helper.equalsIgnoreCase("60000")) {
+                    connectionPref.setSummary("Tracking frequency set to 60 seconds");
+
+	            } else if (helper.equalsIgnoreCase("300000")) {
+                    connectionPref.setSummary("Tracking frequency set to 5 minutes");
+
+	            } else if (helper.equalsIgnoreCase("900000")) {
+                    connectionPref.setSummary("Tracking frequency set to 15 minutes");
+
+	            }
 	        }
 	    }
 	}
