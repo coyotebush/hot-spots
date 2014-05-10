@@ -2,16 +2,18 @@ package se.kth.ict.hotspots;
 
 import android.app.ListActivity;
 import android.content.Intent;
-import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import se.kth.ict.hotspots.db.CityAdapter;
+import android.view.View;
+import android.widget.ListView;
 import se.kth.ict.hotspots.db.DatabaseHelper;
-import se.kth.ict.hotspots.db.LocationAdapter;
+import se.kth.ict.hotspots.db.Favorite;
+import se.kth.ict.hotspots.db.FavoriteAdapter;
+import se.kth.ict.hotspots.widget.FavoriteArrayAdapter;
 
 import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends ListActivity {
 
@@ -19,26 +21,17 @@ public class MainActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sendBroadcast(new Intent(this, AlarmSetter.class));
+        new LoadFavoritesTask().execute();
+    }
 
-        String city = null;
-        try {
-            DatabaseHelper helper = DatabaseHelper.getInstance(this);
-
-            city = new CityAdapter(helper).getNearestCity(59.403, 17.941, 10000);
-
-            Location demoLocation = new Location("demo");
-            demoLocation.setLatitude(59.321);
-            demoLocation.setLongitude(18.073);
-            new LocationAdapter(helper).insertLocation(demoLocation);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (jsqlite.Exception e) {
-            e.printStackTrace();
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        Favorite favorite = (Favorite) l.getItemAtPosition(position);
+        if (favorite != null) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(favorite.getUri());
+            startActivity(intent);
         }
-
-        ListAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
-                new String[] { "Home", city != null ? city : "Work" });
-        setListAdapter(adapter);
     }
 
     @Override
@@ -48,4 +41,25 @@ public class MainActivity extends ListActivity {
         return true;
     }
 
+    private class LoadFavoritesTask extends AsyncTask<Void, Void, List<Favorite>> {
+        @Override
+        protected List<Favorite> doInBackground(Void... params) {
+            try {
+                DatabaseHelper helper = DatabaseHelper.getInstance(MainActivity.this);
+                return new FavoriteAdapter(helper).getTopFavorites();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (jsqlite.Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<Favorite> favorites) {
+            if (favorites != null) {
+                setListAdapter(new FavoriteArrayAdapter(MainActivity.this, favorites));
+            }
+        }
+    }
 }
