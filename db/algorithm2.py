@@ -7,6 +7,7 @@ from pyspatialite import dbapi2 as sqlite3
 beta = 2 ** (1.0/(86400*7)) # double in a week
 alpha = float("Inf")
 meters_per_degree = 110000 # approximate, varies with latitude
+start_time = 1262304000    # 2010-01-01; makes math more manageable
 
 filename = sys.argv[1]
 conn = sqlite3.connect(filename)
@@ -30,11 +31,12 @@ for i, loc in enumerate(locs):
                "second": loc[0],
                # "weight": weight,
                "beta": beta,
+               "start": start_time,
                "factor": meters_per_degree,
                "city": "Anywhere" }
     cur.execute("""INSERT INTO favorite (name, weight, geom, last_location)
                    SELECT :city name,
-                     (b.time - a.time) * Pow(:beta, a.time + b.time) weight,
+                     (b.time - a.time) * Pow(:beta, (a.time + b.time - 2 * :start)/2) weight,
                      ConvexHull(GUnion(Buffer(a.geom, Coalesce(a.accuracy, 10.0) / :factor),
                        Buffer(b.geom, Coalesce(b.accuracy, 10.0) / :factor))) geom,
                      b.id last_location
@@ -88,6 +90,8 @@ for i, loc in enumerate(locs):
             cur.execute("""DELETE FROM favorite
                            WHERE id = :newid""", params)
 
+    # conn.commit()
+    # sys.exit(0)
     if i % 50 == 0:
         conn.commit()
         print "Committed"
