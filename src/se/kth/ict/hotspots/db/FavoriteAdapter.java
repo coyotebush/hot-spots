@@ -45,13 +45,15 @@ public class FavoriteAdapter {
      * Update the favorites table to take into account all location entries
      * that have not yet been processed.
      */
-    public synchronized void updateFavorites() throws jsqlite.Exception {
-        Stmt stmt = db.prepare(
-                "SELECT id FROM location\n" +
-                "WHERE id > Coalesce((SELECT Max(last_location) FROM favorite), 0) ORDER BY time ASC"
-        );
-        while (stmt.step()) {
-            updateFavorites(stmt.column_long(0));
+    public void updateFavorites() throws jsqlite.Exception {
+        synchronized (db) {
+            Stmt stmt = db.prepare(
+                    "SELECT id FROM location\n" +
+                            "WHERE id > Coalesce((SELECT Max(last_location) FROM favorite), 0) ORDER BY time ASC"
+            );
+            while (stmt.step()) {
+                updateFavorites(stmt.column_long(0));
+            }
         }
     }
 
@@ -62,10 +64,12 @@ public class FavoriteAdapter {
      *
      * @param locationId row ID of the new location entry
      */
-    public synchronized void updateFavorites(long locationId) throws jsqlite.Exception {
-        Log.i(LOG_TAG, "Processing location id " + locationId);
-        long favoriteId = createFavoriteFromLocation(locationId);
-        mergeFavorites(locationId, favoriteId);
+    public void updateFavorites(long locationId) throws jsqlite.Exception {
+        synchronized (db) {
+            Log.i(LOG_TAG, "Processing location id " + locationId);
+            long favoriteId = createFavoriteFromLocation(locationId);
+            mergeFavorites(locationId, favoriteId);
+        }
     }
 
     private long createFavoriteFromLocation(long locationId) throws jsqlite.Exception {
