@@ -37,7 +37,6 @@ public class AlarmSetter extends BroadcastReceiver {
         parameter.setProviders(new String[] { LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER });
         i.putExtras(bundle);
 
-
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
         mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime(), frequency, pi);

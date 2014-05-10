@@ -2,12 +2,15 @@ package se.kth.ict.hotspots;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 import se.kth.ict.hotspots.db.DatabaseHelper;
 import se.kth.ict.hotspots.db.Favorite;
 import se.kth.ict.hotspots.db.FavoriteAdapter;
@@ -22,7 +25,13 @@ public class MainActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sendBroadcast(new Intent(this, AlarmSetter.class));
+        SharedPreferences gps_tracking = PreferenceManager.getDefaultSharedPreferences(this);
+        if (gps_tracking.getBoolean("perform_updates", false)) {
+            sendBroadcast(new Intent(this, AlarmSetter.class));
+            Toast.makeText(this, "Tracking enabled", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Tracking not enabled", Toast.LENGTH_LONG).show();
+        }
         new LoadFavoritesTask().execute();
     }
 
