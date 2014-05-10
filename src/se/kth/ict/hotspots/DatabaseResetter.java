@@ -26,10 +26,12 @@ public class DatabaseResetter extends BroadcastReceiver {
         try {
             DatabaseHelper helper = DatabaseHelper.getInstance(context);
 
-            new FavoriteAdapter(helper).clearFavorites();
+            FavoriteAdapter favoriteAdapter = new FavoriteAdapter(helper);
+            favoriteAdapter.clearFavorites();
             if (intent.getBooleanExtra(CLEAR_LOCATIONS, false)) {
                 new LocationAdapter(helper).clearLocations();
             }
+            favoriteAdapter.updateFavorites();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (jsqlite.Exception e) {
