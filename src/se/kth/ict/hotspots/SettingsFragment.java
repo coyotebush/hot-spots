@@ -1,6 +1,5 @@
 package se.kth.ict.hotspots;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,7 +10,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
 public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener{
@@ -115,67 +113,27 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     }
 	
 
-	@Override
-	public void onDestroy() {
-	    super.onDestroy();
-	    Toast.makeText(getActivity(), "Here is a toast for you", Toast.LENGTH_SHORT).show();
-	}
 
-
-	// This looks messy but is functional.
 	@Override
 	    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 	        Preference connectionPref = findPreference(key);
 	        if(key.equalsIgnoreCase("perform_updates") ) {
-	            SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-	            if (myPref.getBoolean("perform_updates", false)==false) {
-	                Toast.makeText(getActivity(), "Tracking disabled", Toast.LENGTH_SHORT).show();
-	                getActivity().stopService(new Intent(getActivity(), AlarmSetter.class));
-	            } else {
-	                getActivity().sendBroadcast(new Intent(getActivity(), AlarmSetter.class));
-	                Toast.makeText(getActivity(), "Tracking enabled", Toast.LENGTH_SHORT).show();
-	            }
+                getActivity().sendBroadcast(new Intent(getActivity(), AlarmSetter.class));
 	        } else if (key.equalsIgnoreCase("tracking_frequent")) {
 	            String helper = sharedPreferences.getString(key, "");
-	            Log.d("TAG", helper);
+                getActivity().sendBroadcast(new Intent(getActivity(), AlarmSetter.class));
 	            if (helper.equalsIgnoreCase("5000")) {
 	               connectionPref.setSummary("Tracking frequency set to 5 seconds");
-	               SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-	               if (myPref.getBoolean("perform_updates", false)==true) {
-    	               getActivity().stopService(new Intent(getActivity(), AlarmSetter.class));
-                       getActivity().sendBroadcast(new Intent(getActivity(), AlarmSetter.class));
-    	               }
 	            } else if (helper.equalsIgnoreCase("30000")) {
 	                   connectionPref.setSummary("Tracking frequency set to 30 seconds");
-	                   SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-	                   if (myPref.getBoolean("perform_updates", false)==true) {
-	                       getActivity().stopService(new Intent(getActivity(), AlarmSetter.class));
-	                       getActivity().sendBroadcast(new Intent(getActivity(), AlarmSetter.class));
-	                       }
 
 	            } else if (helper.equalsIgnoreCase("60000")) {
                     connectionPref.setSummary("Tracking frequency set to 60 seconds");
-                    SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                    if (myPref.getBoolean("perform_updates", false)==true) {
-                        getActivity().stopService(new Intent(getActivity(), AlarmSetter.class));
-                        getActivity().sendBroadcast(new Intent(getActivity(), AlarmSetter.class));
-                        }
-
 	            } else if (helper.equalsIgnoreCase("300000")) {
                     connectionPref.setSummary("Tracking frequency set to 5 minutes");
-                    SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                    if (myPref.getBoolean("perform_updates", false)==true) {
-                        getActivity().stopService(new Intent(getActivity(), AlarmSetter.class));
-                        getActivity().sendBroadcast(new Intent(getActivity(), AlarmSetter.class));
-                        }
 
 	            } else if (helper.equalsIgnoreCase("900000")) {
                     connectionPref.setSummary("Tracking frequency set to 15 minutes");
-                    SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                    if (myPref.getBoolean("perform_updates", false)==true) {
-                        getActivity().stopService(new Intent(getActivity(), AlarmSetter.class));
-                        getActivity().sendBroadcast(new Intent(getActivity(), AlarmSetter.class));
-                        }
 
 	            }
 	        }

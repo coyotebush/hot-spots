@@ -38,10 +38,15 @@ public class AlarmSetter extends BroadcastReceiver {
         i.putExtras(bundle);
 
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
-        mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime(), frequency, pi);
+        if (settings.getBoolean("perform_updates", false)) {
+            mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime(), frequency, pi);
+            Toast.makeText(context, "Location polling every "+frequency/1000+" seconds begun",
+                    Toast.LENGTH_LONG).show();
 
-        Toast.makeText(context, "Location polling every "+frequency+" milliseconds begun",
-                Toast.LENGTH_LONG).show();
+        } else {
+            mgr.cancel(pi);
+            Toast.makeText(context, "Tracking disabled", Toast.LENGTH_SHORT).show();
+        }
     }
 }

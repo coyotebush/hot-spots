@@ -6,13 +6,17 @@
         <item name="60000">Every 60 seconds</item>
         <item name="300000">Every 5 minutes</item>
         <item name="900000">Every 15 minutes</item>
+        <item name="1800000">Every 30 minutes</item>
+        <item name="3600000">Every 60 minutes</item>
     </string-array>
     <string-array name="syncTrackingValues">
         <item name="5000">5000</item>
         <item name="30000">30000</item>
         <item name="60000">60000</item>
         <item name="300000">300000</item>
-        <item name="900000">900000</item>        
+        <item name="900000">900000</item>
+        <item name="1800000">1800000</item>        
+        <item name="3600000">3600000</item>        
     </string-array>
      
 </resources>
