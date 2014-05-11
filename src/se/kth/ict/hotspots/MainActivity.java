@@ -12,6 +12,7 @@ import se.kth.ict.hotspots.db.DatabaseHelper;
 import se.kth.ict.hotspots.db.Favorite;
 import se.kth.ict.hotspots.db.FavoriteAdapter;
 import se.kth.ict.hotspots.widget.FavoriteArrayAdapter;
+import se.kth.ict.hotspots.widget.PromptDialogFragment;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,11 +39,18 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
 
     @Override
     public boolean onItemLongClick(AdapterView<?> l, View view, int position, long id) {
-        Favorite favorite = (Favorite) l.getItemAtPosition(position);
+        final Favorite favorite = (Favorite) l.getItemAtPosition(position);
         if (favorite != null) {
-            String name = "Renamed";
-            favorite.setName(name);
-            new RenameFavoriteTask().execute(favorite);
+            PromptDialogFragment dialog = new PromptDialogFragment(R.string.title_rename,
+                    R.string.button_rename, favorite.getName());
+            dialog.setListener(new PromptDialogFragment.PromptDialogListener() {
+                @Override
+                public void onPromptDialogResult(PromptDialogFragment dialog, String value) {
+                    favorite.setName(value);
+                    new RenameFavoriteTask().execute(favorite);
+                }
+            });
+            dialog.show(getFragmentManager(), "dialog");
             return true;
         }
         return false;
