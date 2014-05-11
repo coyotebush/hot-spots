@@ -33,4 +33,9 @@ public class LocationAdapter {
         stmt.step();
         return db.last_insert_rowid();
     }
+
+    public void clearLocations() throws jsqlite.Exception {
+        Stmt stmt = db.prepare("DELETE FROM location");
+        stmt.step();
+    }
 }
