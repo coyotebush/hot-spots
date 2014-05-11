@@ -26,7 +26,7 @@ public class LocationAdapter {
         Stmt stmt = db.prepare("INSERT INTO location (provider, time, accuracy, geom) " +
                 "VALUES (?, ?, ?, MakePoint(?, ?, 4326))");
         stmt.bind(1, location.getProvider());
-        stmt.bind(2, location.getTime()); // TODO store getElapsedRealtimeNanos instead/also?
+        stmt.bind(2, location.getTime() / 1000);
         stmt.bind(3, location.getAccuracy());
         stmt.bind(4, location.getLongitude());
         stmt.bind(5, location.getLatitude());
