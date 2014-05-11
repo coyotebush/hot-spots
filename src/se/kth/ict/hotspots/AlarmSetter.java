@@ -5,9 +5,11 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 import com.commonsware.cwac.locpoll.LocationPoller;
@@ -18,9 +20,12 @@ import com.commonsware.cwac.locpoll.LocationPollerParameter;
  * Sets a repeating alarm to poll the device location, if not already set.
  */
 public class AlarmSetter extends BroadcastReceiver {
-
+    
     @Override
     public void onReceive(Context context, Intent intent) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        String frequencyString = settings.getString("tracking_frequent", String.valueOf(AlarmManager.INTERVAL_FIFTEEN_MINUTES));
+        long frequency = Long.parseLong(frequencyString);
         Log.w("AlarmSetter", "onReceive");
         AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(context, LocationPoller.class);
@@ -32,12 +37,16 @@ public class AlarmSetter extends BroadcastReceiver {
         parameter.setProviders(new String[] { LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER });
         i.putExtras(bundle);
 
-
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
-        mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, pi);
+        if (settings.getBoolean("perform_updates", false)) {
+            mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime(), frequency, pi);
+            Toast.makeText(context, "Location polling every "+frequency/1000+" seconds begun",
+                    Toast.LENGTH_LONG).show();
 
-        Toast.makeText(context, "Location polling every 15 minutes begun",
-                Toast.LENGTH_LONG).show();
+        } else {
+            mgr.cancel(pi);
+            Toast.makeText(context, "Tracking disabled", Toast.LENGTH_SHORT).show();
+        }
     }
 }

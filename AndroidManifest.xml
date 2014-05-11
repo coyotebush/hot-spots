@@ -28,6 +28,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="se.kth.ict.hotspots.SettingsActivity">
+        </activity>
 
         <receiver android:name=".AlarmSetter">
             <intent-filter>

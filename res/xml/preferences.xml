@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+        <PreferenceCategory
+            android:title="Tracking options"
+            android:key="first_category">
+            
+            <CheckBoxPreference 
+                android:key="perform_updates"
+                android:summaryOn="Tracking enabled"
+                android:summaryOff="Tracking disabled"
+                android:title="Enable tracking"
+                android:defaultValue="false"
+                />
+            
+            <ListPreference 
+                android:key="tracking_frequent"
+                android:entries="@array/trackFrequency"
+                android:summary="How frequent tracking is"
+                android:entryValues="@array/syncTrackingValues"
+                android:title="Tracking frequency"
+                />
+            
+            
+        </PreferenceCategory>
+		<PreferenceCategory 
+			android:title="Database options"
+			android:key="second_category">
+            
+            <Preference android:title="Clear location data"
+                android:key="clear_location" >
+			</Preference>
+			
+			<Preference android:title="Clear favorites data"
+			    android:key="clear_favorites" >
+	   		</Preference>
+		    
+		    <Preference android:title="Source code on Github"
+		        android:summary="Opens external web browser" >
+	   			<intent android:action="android.intent.action.VIEW"
+	            android:data="https://github.com/coyotebush/hot-spots" />
+			</Preference>
+		    
+	    </PreferenceCategory>        
+        
+    </PreferenceScreen>
