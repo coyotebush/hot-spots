@@ -26,11 +26,16 @@ public class LocationAdapter {
         Stmt stmt = db.prepare("INSERT INTO location (provider, time, accuracy, geom) " +
                 "VALUES (?, ?, ?, MakePoint(?, ?, 4326))");
         stmt.bind(1, location.getProvider());
-        stmt.bind(2, location.getTime()); // TODO store getElapsedRealtimeNanos instead/also?
+        stmt.bind(2, location.getTime() / 1000);
         stmt.bind(3, location.getAccuracy());
         stmt.bind(4, location.getLongitude());
         stmt.bind(5, location.getLatitude());
         stmt.step();
         return db.last_insert_rowid();
+    }
+
+    public void clearLocations() throws jsqlite.Exception {
+        Stmt stmt = db.prepare("DELETE FROM location");
+        stmt.step();
     }
 }

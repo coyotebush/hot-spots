@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import com.commonsware.cwac.locpoll.LocationPollerResult;
 import se.kth.ict.hotspots.db.DatabaseHelper;
+import se.kth.ict.hotspots.db.FavoriteAdapter;
 import se.kth.ict.hotspots.db.LocationAdapter;
 
 import java.io.IOException;
@@ -42,16 +43,17 @@ public class LocationReceiver extends BroadcastReceiver {
         msg="Invalid broadcast received!";
       }
       DatabaseHelper helper;
-	try {
-        Log.i("LocationReceiver", msg);
-		helper = DatabaseHelper.getInstance(context);
-		new LocationAdapter(helper).insertLocation(loc);
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (jsqlite.Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+      try {
+          Log.i("LocationReceiver", msg);
+          helper = DatabaseHelper.getInstance(context);
+          long locationId = new LocationAdapter(helper).insertLocation(loc);
+          new FavoriteAdapter(helper).updateFavorites(locationId);
+      } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+      } catch (jsqlite.Exception e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+      }
   }
 }
