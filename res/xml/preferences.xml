@@ -9,7 +9,7 @@
                 android:summaryOn="Tracking enabled"
                 android:summaryOff="Tracking disabled"
                 android:title="Enable tracking"
-                android:defaultValue="true"
+                android:defaultValue="false"
                 />
             
             <ListPreference 

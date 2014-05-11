@@ -24,7 +24,7 @@ public class AlarmSetter extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        String frequencyString = settings.getString("tracking_frequent", "");
+        String frequencyString = settings.getString("tracking_frequent", String.valueOf(AlarmManager.INTERVAL_FIFTEEN_MINUTES));
         long frequency = Long.parseLong(frequencyString);
         Log.w("AlarmSetter", "onReceive");
         AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
