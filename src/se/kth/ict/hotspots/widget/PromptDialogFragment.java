@@ -6,6 +6,7 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.EditText;
 import se.kth.ict.hotspots.R;
 
@@ -59,8 +60,12 @@ public class PromptDialogFragment extends DialogFragment {
 
         text = new EditText(getActivity());
         text.setText(initialValue);
+        text.selectAll();
+        text.requestFocus();
         builder.setView(text);
 
-        return builder.create();
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        return dialog;
     }
 }
