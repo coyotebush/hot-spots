@@ -4,5 +4,8 @@
     <string name="app_name">Hot Spots</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_rename">Rename</string>
+    <string name="button_rename">Rename</string>
+    <string name="button_cancel">Cancel</string>
 
 </resources>

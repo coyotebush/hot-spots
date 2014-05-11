@@ -6,20 +6,23 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import se.kth.ict.hotspots.db.DatabaseHelper;
 import se.kth.ict.hotspots.db.Favorite;
 import se.kth.ict.hotspots.db.FavoriteAdapter;
 import se.kth.ict.hotspots.widget.FavoriteArrayAdapter;
+import se.kth.ict.hotspots.widget.PromptDialogFragment;
 
 import java.io.IOException;
 import java.util.List;
 
-public class MainActivity extends ListActivity {
+public class MainActivity extends ListActivity implements AdapterView.OnItemLongClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getListView().setOnItemLongClickListener(this);
         sendBroadcast(new Intent(this, AlarmSetter.class));
         new LoadFavoritesTask().execute();
     }
@@ -32,6 +35,25 @@ public class MainActivity extends ListActivity {
             intent.setData(favorite.getUri());
             startActivity(intent);
         }
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> l, View view, int position, long id) {
+        final Favorite favorite = (Favorite) l.getItemAtPosition(position);
+        if (favorite != null) {
+            PromptDialogFragment dialog = new PromptDialogFragment(R.string.title_rename,
+                    R.string.button_rename, favorite.getName());
+            dialog.setListener(new PromptDialogFragment.PromptDialogListener() {
+                @Override
+                public void onPromptDialogResult(PromptDialogFragment dialog, String value) {
+                    favorite.setName(value);
+                    new RenameFavoriteTask().execute(favorite);
+                }
+            });
+            dialog.show(getFragmentManager(), "dialog");
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -60,6 +82,26 @@ public class MainActivity extends ListActivity {
             if (favorites != null) {
                 setListAdapter(new FavoriteArrayAdapter(MainActivity.this, favorites));
             }
+        }
+    }
+
+    private class RenameFavoriteTask extends AsyncTask<Favorite, Void, Void> {
+        @Override
+        protected Void doInBackground(Favorite... params) {
+            try {
+                DatabaseHelper helper = DatabaseHelper.getInstance(MainActivity.this);
+                new FavoriteAdapter(helper).saveFavorite(params[0]);
+            } catch (jsqlite.Exception e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            new LoadFavoritesTask().execute();
         }
     }
 }
