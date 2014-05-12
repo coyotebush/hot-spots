@@ -37,9 +37,11 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
+        <receiver android:name=".DatabaseResetter"/>
         <receiver android:name=".LocationReceiver" />
         <receiver android:name="com.commonsware.cwac.locpoll.LocationPoller"/>
 
         <service android:name="com.commonsware.cwac.locpoll.LocationPollerService" />
+        <service android:name=".FavoriteUpdaterService"/>
     </application>
 </manifest>

@@ -30,6 +30,8 @@ public class DatabaseResetter extends BroadcastReceiver {
             favoriteAdapter.clearFavorites();
             if (intent.getBooleanExtra(CLEAR_LOCATIONS, false)) {
                 new LocationAdapter(helper).clearLocations();
+            } else {
+                context.startService(new Intent(context, FavoriteUpdaterService.class));
             }
             favoriteAdapter.updateFavorites();
         } catch (IOException e) {
