@@ -57,14 +57,12 @@ public class FavoriteAdapter {
      * that have not yet been processed.
      */
     public void updateFavorites() throws jsqlite.Exception {
-        synchronized (db) {
-            Stmt stmt = db.prepare(
-                    "SELECT id FROM location\n" +
-                            "WHERE id > Coalesce((SELECT Max(last_location) FROM favorite), 0) ORDER BY time ASC"
-            );
-            while (stmt.step()) {
-                updateFavorites(stmt.column_long(0));
-            }
+        Stmt stmt = db.prepare(
+                "SELECT id FROM location\n" +
+                "WHERE id > Coalesce((SELECT Max(last_location) FROM favorite), 0) ORDER BY time ASC"
+        );
+        while (stmt.step()) {
+            updateFavorites(stmt.column_long(0));
         }
     }
 
@@ -76,11 +74,9 @@ public class FavoriteAdapter {
      * @param locationId row ID of the new location entry
      */
     public void updateFavorites(long locationId) throws jsqlite.Exception {
-        synchronized (db) {
-            Log.i(LOG_TAG, "Processing location id " + locationId);
-            long favoriteId = createFavoriteFromLocation(locationId);
-            mergeFavorites(locationId, favoriteId);
-        }
+        Log.i(LOG_TAG, "Processing location id " + locationId);
+        long favoriteId = createFavoriteFromLocation(locationId);
+        mergeFavorites(locationId, favoriteId);
     }
 
     private long createFavoriteFromLocation(long locationId) throws jsqlite.Exception {
@@ -108,20 +104,20 @@ public class FavoriteAdapter {
         // merge destructively into the current best one.
         Stmt stmt = db.prepare(
                 "UPDATE favorite\n" +
-                        "SET weight =\n" +
-                        "  (SELECT Sum(weight) FROM favorite\n" +
-                        "   WHERE Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1))),\n" +
-                        " geom =\n" +
-                        "  (SELECT ConvexHull(GUnion(geom)) FROM favorite\n" +
-                        "   WHERE Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1))),\n" +
-                        " last_location = ?2\n" +
-                        "WHERE id <> ?1 AND Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1))\n" +
-                        " AND (weight / GreatCircleLength(ExteriorRing(geom))) <\n" +
-                        "   (SELECT Sum(weight) / GreatCircleLength(ExteriorRing(ConvexHull(GUnion(geom)))) FROM favorite\n" +
-                        "    WHERE Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1)))\n" +
-                        " AND (weight / GreatCircleLength(ExteriorRing(geom))) >=\n" +
-                        "   (SELECT Max(weight / GreatCircleLength(ExteriorRing(geom))) FROM favorite\n" +
-                        "WHERE id <> ?1 AND Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1)))"
+                "SET weight =\n" +
+                "  (SELECT Sum(weight) FROM favorite\n" +
+                "   WHERE Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1))),\n" +
+                " geom =\n" +
+                "  (SELECT ConvexHull(GUnion(geom)) FROM favorite\n" +
+                "   WHERE Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1))),\n" +
+                " last_location = ?2\n" +
+                "WHERE id <> ?1 AND Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1))\n" +
+                " AND (weight / GreatCircleLength(ExteriorRing(geom))) <\n" +
+                "   (SELECT Sum(weight) / GreatCircleLength(ExteriorRing(ConvexHull(GUnion(geom)))) FROM favorite\n" +
+                "    WHERE Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1)))\n" +
+                " AND (weight / GreatCircleLength(ExteriorRing(geom))) >=\n" +
+                "   (SELECT Max(weight / GreatCircleLength(ExteriorRing(geom))) FROM favorite\n" +
+                "WHERE id <> ?1 AND Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1)))"
         );
         stmt.bind(1, favoriteId);
         stmt.bind(2, locationId);
@@ -131,8 +127,8 @@ public class FavoriteAdapter {
             // If we merged, delete all but the one we updated
             stmt = db.prepare(
                     "DELETE FROM favorite\n" +
-                            " WHERE Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1))\n" +
-                            "  AND last_location <> ?2 OR id = ?1"
+                    " WHERE Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1))\n" +
+                    "  AND last_location <> ?2 OR id = ?1"
             );
             stmt.bind(1, favoriteId);
             stmt.bind(2, locationId);
@@ -142,10 +138,10 @@ public class FavoriteAdapter {
             // Otherwise, just add some weight to any that intersect
             stmt = db.prepare(
                     "UPDATE favorite\n" +
-                            "SET weight = weight + (SELECT weight / Area(geom) FROM favorite WHERE id = ?1) *\n" +
-                            "  Area(Intersection(geom, (SELECT geom FROM favorite WHERE id = ?1))),\n" +
-                            " last_location = ?2\n" +
-                            "WHERE id <> ?1 AND Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1))"
+                    "SET weight = weight + (SELECT weight / Area(geom) FROM favorite WHERE id = ?1) *\n" +
+                    "  Area(Intersection(geom, (SELECT geom FROM favorite WHERE id = ?1))),\n" +
+                    " last_location = ?2\n" +
+                    "WHERE id <> ?1 AND Intersects(geom, (SELECT geom FROM favorite WHERE id = ?1))"
             );
             stmt.bind(1, favoriteId);
             stmt.bind(2, locationId);

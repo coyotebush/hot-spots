@@ -42,12 +42,12 @@ public class LocationReceiver extends BroadcastReceiver {
       if (msg==null) {
         msg="Invalid broadcast received!";
       }
-      DatabaseHelper helper;
+      Log.i("LocationReceiver", msg);
+      Intent favoriteIntent = new Intent(context, FavoriteUpdaterService.class);
       try {
-          Log.i("LocationReceiver", msg);
-          helper = DatabaseHelper.getInstance(context);
+          DatabaseHelper helper = DatabaseHelper.getInstance(context);
           long locationId = new LocationAdapter(helper).insertLocation(loc);
-          new FavoriteAdapter(helper).updateFavorites(locationId);
+          favoriteIntent.putExtra(FavoriteUpdaterService.LOCATION_ID, locationId);
       } catch (IOException e) {
           // TODO Auto-generated catch block
           e.printStackTrace();
@@ -55,5 +55,6 @@ public class LocationReceiver extends BroadcastReceiver {
           // TODO Auto-generated catch block
           e.printStackTrace();
       }
+      context.startService(favoriteIntent);
   }
 }

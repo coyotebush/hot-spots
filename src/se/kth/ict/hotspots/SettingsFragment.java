@@ -28,6 +28,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         Preference clearLocation = findPreference("clear_location");
 
         // Clear locations
+        assert clearLocation != null;
         clearLocation.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             
             @Override
@@ -41,7 +42,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
-                        // Clear locations method
+                        resetData(true);
                         Toast.makeText(getActivity(), "bye bye locations", Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     }
@@ -62,6 +63,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         Preference clearFavorites = findPreference("clear_favorites");
         
         // Clear favorites
+        assert clearFavorites != null;
         clearFavorites.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             
             
@@ -70,14 +72,14 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 
-                builder.setTitle("Destroy favorites data");
+                builder.setTitle("Destroy and recalculate favorites data");
                 builder.setMessage("Are you sure?");
 
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
-                        // Clear favorites method
-                        Toast.makeText(getActivity(), "bye bye favorites", Toast.LENGTH_SHORT).show();
+                        resetData(false);
+                        Toast.makeText(getActivity(), "Recalculating favorites may take several minutes.", Toast.LENGTH_LONG).show();
                         dialog.dismiss();
                     }
                 });
@@ -95,9 +97,15 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             }
         });
 	}
-	
-	
-	@Override
+
+    private void resetData(boolean clearLocations) {
+        Intent intent = new Intent(getActivity(), DatabaseResetter.class);
+        intent.putExtra(DatabaseResetter.CLEAR_LOCATIONS, clearLocations);
+        getActivity().sendBroadcast(intent);
+    }
+
+
+    @Override
     public void onResume() {
         super.onResume();
         // Set up a listener whenever a key changes
