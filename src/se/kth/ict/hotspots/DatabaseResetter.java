@@ -33,7 +33,6 @@ public class DatabaseResetter extends BroadcastReceiver {
             } else {
                 context.startService(new Intent(context, FavoriteUpdaterService.class));
             }
-            favoriteAdapter.updateFavorites();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (jsqlite.Exception e) {
