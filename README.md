@@ -3,6 +3,8 @@ Hot Spots
 
 Hot Spots is an Android application which continually records the device's position and identifies probable "favorite" locations.
 
+Developed as a course project for [ID2012 Ubiquitous Computing](https://www.kth.se/student/kurser/kurs/ID2012/?l=en) at KTH. Some project documentation is in the [wiki](//github.com/coyotebush/hot-spots/wiki).
+
 Development
 -----------
 Add <https://github.com/alexbirkett/cwac-locpoll> as an Android library project in your IDE.
