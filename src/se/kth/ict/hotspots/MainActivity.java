@@ -1,7 +1,10 @@
 package se.kth.ict.hotspots;
 
 import android.app.ListActivity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -20,12 +23,27 @@ import java.util.List;
 
 public class MainActivity extends ListActivity implements AdapterView.OnItemLongClickListener {
 
+    private FavoritesUpdatedReceiver favoritesUpdatedReceiver = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getListView().setOnItemLongClickListener(this);
         sendBroadcast(new Intent(this, AlarmSetter.class));
         new LoadFavoritesTask().execute();
+        favoritesUpdatedReceiver = new FavoritesUpdatedReceiver();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(favoritesUpdatedReceiver, new IntentFilter(FavoriteUpdaterService.FAVORITES_UPDATED));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(favoritesUpdatedReceiver);
     }
 
     @Override
@@ -115,6 +133,13 @@ public class MainActivity extends ListActivity implements AdapterView.OnItemLong
 
         @Override
         protected void onPostExecute(Void aVoid) {
+            new LoadFavoritesTask().execute();
+        }
+    }
+
+    private class FavoritesUpdatedReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
             new LoadFavoritesTask().execute();
         }
     }

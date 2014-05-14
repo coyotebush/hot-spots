@@ -15,6 +15,11 @@ import java.io.IOException;
 public class FavoriteUpdaterService extends IntentService {
 
     /**
+     * Intent action broadcast when favorites have been updated.
+     */
+    public static final String FAVORITES_UPDATED = "se.kth.ict.hotspots.FavoriteUpdaterService.FAVORITES_UPDATED";
+
+    /**
      * A long extra with this name in a triggering Intent indicates
      * the ID of a specific location to incorporate into the favorites model.
      * If not set, all previously unprocessed locations are processed.
@@ -37,6 +42,7 @@ public class FavoriteUpdaterService extends IntentService {
             } else {
                 favoriteAdapter.updateFavorites();
             }
+            sendBroadcast(new Intent(FAVORITES_UPDATED));
         } catch (jsqlite.Exception e) {
             e.printStackTrace();
         } catch (IOException e) {
